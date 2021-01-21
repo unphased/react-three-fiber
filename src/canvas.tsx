@@ -80,6 +80,7 @@ export type CanvasContext = SharedCanvasContext & {
 }
 
 export type FilterFunction = (items: THREE.Intersection[], state: SharedCanvasContext) => THREE.Intersection[]
+export type ObjectAdjustmentFunction = (obj: THREE.Object3D) => THREE.Object3D
 export type ComputeOffsetsFunction = (
   event: DomEvent,
   state: SharedCanvasContext
@@ -103,7 +104,11 @@ export interface CanvasProps {
       ReactThreeFiber.Object3DNode<THREE.PerspectiveCamera, typeof THREE.PerspectiveCamera> &
       ReactThreeFiber.Object3DNode<THREE.OrthographicCamera, typeof THREE.OrthographicCamera>
   >
-  raycaster?: Partial<THREE.Raycaster> & { filter?: FilterFunction; computeOffsets?: ComputeOffsetsFunction }
+  raycaster?: Partial<THREE.Raycaster> & {
+    filter?: FilterFunction
+    objectAdjustment?: ObjectAdjustmentFunction
+    computeOffsets?: ComputeOffsetsFunction
+  }
   pixelRatio?: number | [number, number]
   onCreated?: (props: CanvasContext) => Promise<any> | void
   onPointerMissed?: () => void
@@ -162,7 +167,7 @@ export const useCanvas = (props: UseCanvasProps): DomEventHandlers => {
   const [defaultRaycaster] = React.useState(() => {
     const ray = new THREE.Raycaster()
     if (raycaster) {
-      const { filter, computeOffsets, ...raycasterProps } = raycaster
+      const { filter, objectAdjustment, computeOffsets, ...raycasterProps } = raycaster
       applyProps(ray, raycasterProps, {})
     }
     return ray
@@ -372,9 +377,19 @@ export const useCanvas = (props: UseCanvasProps): DomEventHandlers => {
       const hits: Intersection[] = []
 
       // Allow callers to eliminate event objects
-      const eventsObjects = filter
+      let eventsObjects = filter
         ? filter((state.current.scene as any).__interaction)
         : (state.current.scene as any).__interaction
+
+      // apply object adjustment map to raycast subjects, to customize raycast behavior when used
+      // with complex primitives.
+      if (raycaster?.objectAdjustment) {
+        eventsObjects = eventsObjects.map((o: THREE.Object3D) => {
+          const replacement = raycaster?.objectAdjustment?.(o)
+          if (replacement) return replacement
+          return o
+        })
+      }
 
       // Intersect known handler objects and filter against duplicates
       let intersects = defaultRaycaster.intersectObjects(eventsObjects, true).filter((item) => {
