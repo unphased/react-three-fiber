@@ -80,7 +80,7 @@ export type CanvasContext = SharedCanvasContext & {
 }
 
 export type FilterFunction = (items: THREE.Intersection[], state: SharedCanvasContext) => THREE.Intersection[]
-export type ObjectAdjustmentFunction = (obj: THREE.Object3D) => THREE.Object3D
+export type ObjectAdjustmentFunction = (obj: THREE.Object3D) => THREE.Object3D | undefined
 export type ComputeOffsetsFunction = (
   event: DomEvent,
   state: SharedCanvasContext
