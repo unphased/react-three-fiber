@@ -57,7 +57,7 @@
     "pack-dist": "cd dist && yarn pack && mv *.tgz .."
   },
   "dependencies": {
-    "@babel/runtime": "^7.12.1",
+    "@babel/runtime": "^8.0.0",
     "react-merge-refs": "^1.1.0",
     "react-reconciler": "0.26.1",
     "react-use-measure": "^2.0.3",
@@ -74,7 +74,7 @@
   },
   "devDependencies": {
     "@ampproject/rollup-plugin-closure-compiler": "^0.26.0",
-    "@babel/core": "7.12.3",
+    "@babel/core": "7.29.6",
     "@babel/helper-call-delegate": "^7.12.1",
     "@babel/plugin-transform-modules-commonjs": "7.12.1",
     "@babel/plugin-transform-parameters": "7.12.1",
@@ -124,7 +124,7 @@
     "react-native": "^0.63.3",
     "react-test-renderer": "^17.0.0",
     "rimraf": "^3.0.2",
-    "rollup": "^2.32.0",
+    "rollup": "^4.63.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-json": "^4.0.0",
